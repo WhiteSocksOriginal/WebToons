@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#101013">
-<title>WSOWT</title>
+<title>White Socks Only Webtoons</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -15,203 +15,133 @@
     color: #e8e8ea;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
     -webkit-text-size-adjust: 100%;
-    overflow-x: hidden;
+    min-height: 100vh;
   }
 
-  /* 상단 읽기 진행 바 */
-  #progress {
-    position: fixed;
-    top: 0; left: 0;
-    height: 3px;
-    width: 0%;
-    background: #4f8cff;
-    z-index: 10;
-    transition: width .1s linear;
-  }
-
-  #strip {
-    width: 100%;
-    max-width: var(--w, 800px);
+  .wrap {
+    max-width: 880px;
     margin: 0 auto;
-    /* 이미지 사이 미세한 틈/서브픽셀 라인 제거 */
-    font-size: 0;
-    line-height: 0;
-    background: #101013;
+    padding: clamp(40px, 9vw, 80px) clamp(20px, 5vw, 32px) 80px;
   }
 
-  #strip img {
+  header { margin-bottom: clamp(32px, 6vw, 52px); }
+
+  h1 {
+    font-size: clamp(26px, 5.5vw, 38px);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.2;
+  }
+  h1 span { color: #4f8cff; }
+
+  header p {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #80808c;
+  }
+
+  .list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+  }
+
+  .card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: #17171c;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color .15s, transform .15s;
+  }
+  .card:hover {
+    border-color: rgba(255,255,255,.2);
+    transform: translateY(-2px);
+  }
+
+  .thumb {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: #202027;
+  }
+  .thumb img {
     display: block;
     width: 100%;
-    height: auto;
-    /* 로딩 전에도 자리를 차지해 스크롤이 튀지 않도록 */
-    background: #17171c;
-    margin: 0;
-    padding: 0;
-    vertical-align: top;
+    height: 100%;
+    object-fit: cover;
   }
 
-  /* ---- 폭 조절 (PC 전용) ---- */
-  #zoom {
-    position: fixed;
-    right: 16px;
-    bottom: 16px;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    border: 1px solid rgba(255,255,255,.14);
-    background: rgba(24,24,30,.72);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    border-radius: 999px;
-    padding: 4px;
-    opacity: .3;
-    transition: opacity .2s;
+  /* 읽던 진행도 */
+  .bar {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 3px;
+    background: rgba(0,0,0,.35);
   }
-  #zoom:hover { opacity: 1; }
-
-  #zoom button {
-    width: 30px;
-    height: 30px;
-    border: 0;
-    border-radius: 999px;
-    background: transparent;
-    color: #e8e8ea;
-    font: 400 17px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    cursor: pointer;
-  }
-  #zoom button:hover:not(:disabled) { background: rgba(255,255,255,.1); }
-  #zoom button:disabled { opacity: .25; cursor: default; }
-
-  #zoomVal {
-    min-width: 54px;
-    text-align: center;
-    font: 500 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: #b8b8c0;
-    -webkit-user-select: none;
-    user-select: none;
+  .bar i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: #4f8cff;
   }
 
-  /* 모바일/태블릿: 항상 화면 꽉 채움, 폭 조절 숨김 */
-  @media (max-width: 820px), (pointer: coarse) {
-    #strip { max-width: 100%; }
-    #zoom { display: none; }
+  .meta { padding: 14px 16px 16px; }
+  .meta h2 {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+  }
+  .meta p {
+    margin-top: 5px;
+    font-size: 12.5px;
+    color: #80808c;
   }
 
-  #end {
-    font-size: 13px;
-    line-height: 1.6;
-    text-align: center;
-    color: #6b6b75;
-    padding: 40px 20px calc(40px + env(safe-area-inset-bottom));
+  footer {
+    margin-top: 48px;
+    font-size: 12px;
+    color: #55555e;
   }
 </style>
 </head>
 <body>
 
-<div id="progress"></div>
+<div class="wrap">
 
-<div id="strip">
-  <img src="WSOWT1.jpg" width="1080" height="10800" alt="1" fetchpriority="high">
-  <img src="WSOWT2.jpg" width="1080" height="10800" alt="2" loading="lazy" decoding="async">
-  <img src="WSOWT3.jpg" width="1080" height="10305" alt="3" loading="lazy" decoding="async">
-  <img src="WSOWT4.jpg" width="1080" height="12000" alt="4" loading="lazy" decoding="async">
-</div>
+  <header>
+    <h1>White Socks Only<br><span>Webtoons</span></h1>
+    <p>세로 스크롤로 읽는 웹툰 모음</p>
+  </header>
 
-<div id="end">— 끝 —</div>
+  <div class="list">
 
-<div id="zoom">
-  <button id="zOut" type="button" title="좁게 ( - )" aria-label="좁게">−</button>
-  <span id="zoomVal">800px</span>
-  <button id="zIn" type="button" title="넓게 ( + )" aria-label="넓게">+</button>
+    <a class="card" href="BestFriend/">
+      <div class="thumb">
+        <img src="BestFriend/cover.jpg" alt="" width="480" height="480">
+        <div class="bar"><i data-progress="BestFriend"></i></div>
+      </div>
+      <div class="meta">
+        <h2>BestFriend</h2>
+        <p>4화 · 전편</p>
+      </div>
+    </a>
+
+  </div>
+
+  <footer>White Socks Only</footer>
+
 </div>
 
 <script>
-(function () {
-  // ----- 읽기 진행 바 -----
-  var bar = document.getElementById('progress');
-  var ticking = false;
-  function update() {
-    var max = document.documentElement.scrollHeight - window.innerHeight;
-    var p = max > 0 ? (window.scrollY / max) * 100 : 0;
-    bar.style.width = Math.min(100, Math.max(0, p)) + '%';
-    ticking = false;
-  }
-  addEventListener('scroll', function () {
-    if (!ticking) { ticking = true; requestAnimationFrame(update); }
-  }, { passive: true });
-  addEventListener('resize', update);
-  update();
-
-  // ----- 폭 조절 (PC 전용, 단계별) -----
-  var STEPS = [560, 640, 720, 800, 900, 1000, 1080];
-  var DEFAULT = 3; // 800px
-  var zOut = document.getElementById('zOut');
-  var zIn = document.getElementById('zIn');
-  var zVal = document.getElementById('zoomVal');
-
-  var idx = DEFAULT;
+// 각 작품의 읽던 진행도를 카드에 표시
+document.querySelectorAll('[data-progress]').forEach(function (el) {
   try {
-    var s = parseInt(localStorage.getItem('wtWidth'), 10);
-    if (s >= 0 && s < STEPS.length) idx = s;
+    var p = parseFloat(localStorage.getItem('wt:' + el.dataset.progress + ':pos'));
+    if (p > 0.005) el.style.width = Math.min(100, p * 100) + '%';
   } catch (e) {}
-
-  function apply() {
-    // 화면이 움직여도 읽던 지점을 유지
-    var max = document.documentElement.scrollHeight - window.innerHeight;
-    var ratio = max > 0 ? window.scrollY / max : 0;
-
-    document.documentElement.style.setProperty('--w', STEPS[idx] + 'px');
-    zVal.textContent = STEPS[idx] + 'px';
-    zOut.disabled = idx === 0;
-    zIn.disabled = idx === STEPS.length - 1;
-
-    var newMax = document.documentElement.scrollHeight - window.innerHeight;
-    if (newMax > 0) window.scrollTo(0, ratio * newMax);
-    update();
-  }
-
-  function step(d) {
-    var next = idx + d;
-    if (next < 0 || next >= STEPS.length) return;
-    idx = next;
-    try { localStorage.setItem('wtWidth', idx); } catch (e) {}
-    apply();
-  }
-
-  apply();
-  zOut.addEventListener('click', function () { step(-1); });
-  zIn.addEventListener('click', function () { step(1); });
-
-  // ----- 읽던 위치 이어보기 -----
-  var KEY = 'wtPos';
-  var restoring = true;
-  try {
-    var saved = parseFloat(localStorage.getItem(KEY));
-    if (saved > 0.001) {
-      addEventListener('load', function () {
-        var max = document.documentElement.scrollHeight - window.innerHeight;
-        window.scrollTo(0, saved * max);
-        restoring = false;
-      });
-    } else { restoring = false; }
-  } catch (e) { restoring = false; }
-
-  addEventListener('scroll', function () {
-    if (restoring) return;
-    var max = document.documentElement.scrollHeight - window.innerHeight;
-    if (max > 0) { try { localStorage.setItem(KEY, window.scrollY / max); } catch (e) {} }
-  }, { passive: true });
-
-  // ----- 키보드 -----
-  addEventListener('keydown', function (e) {
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.key === 'Home') { window.scrollTo(0, 0); }
-    else if (e.key === 'End') { window.scrollTo(0, document.body.scrollHeight); }
-    else if (e.key === '-' || e.key === '_') { step(-1); }
-    else if (e.key === '+' || e.key === '=') { step(1); }
-  });
-})();
+});
 </script>
 
 </body>

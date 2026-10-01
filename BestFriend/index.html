@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101013">
+<title>BestFriend — White Socks Only</title>
+<meta property="og:title" content="BestFriend">
+<meta property="og:image" content="cover.jpg">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { background: #101013; }
+
+  body {
+    background: #101013;
+    color: #e8e8ea;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+  }
+
+  /* 상단 읽기 진행 바 */
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    background: #4f8cff;
+    z-index: 10;
+    transition: width .1s linear;
+  }
+
+  #strip {
+    width: 100%;
+    max-width: var(--w, 800px);
+    margin: 0 auto;
+    /* 이미지 사이 미세한 틈/서브픽셀 라인 제거 */
+    font-size: 0;
+    line-height: 0;
+    background: #101013;
+  }
+
+  #strip img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* 로딩 전에도 자리를 차지해 스크롤이 튀지 않도록 */
+    background: #17171c;
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+  }
+
+  /* ---- 공통 플로팅 컨트롤 ---- */
+  .fab {
+    position: fixed;
+    z-index: 10;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(24,24,30,.72);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+    opacity: .3;
+    transition: opacity .2s;
+  }
+  .fab:hover { opacity: 1; }
+
+  /* 목록으로 */
+  #home {
+    left: max(16px, env(safe-area-inset-left));
+    top: max(16px, env(safe-area-inset-top));
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px 8px 11px;
+    color: #e8e8ea;
+    text-decoration: none;
+    font: 500 13px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+  }
+
+  /* 폭 조절 (PC 전용) */
+  #zoom {
+    right: 16px;
+    bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+  }
+  #zoom button {
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #e8e8ea;
+    font: 400 17px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    cursor: pointer;
+  }
+  #zoom button:hover:not(:disabled) { background: rgba(255,255,255,.1); }
+  #zoom button:disabled { opacity: .25; cursor: default; }
+
+  #zoomVal {
+    min-width: 54px;
+    text-align: center;
+    font: 500 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #b8b8c0;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* 모바일/태블릿: 항상 화면 꽉 채움, 폭 조절 숨김 */
+  @media (max-width: 820px), (pointer: coarse) {
+    #strip { max-width: 100%; }
+    #zoom { display: none; }
+    #home { opacity: .75; }
+  }
+
+  #end {
+    text-align: center;
+    padding: 48px 20px calc(48px + env(safe-area-inset-bottom));
+  }
+  #end p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #6b6b75;
+    margin-bottom: 20px;
+  }
+  #end a {
+    display: inline-block;
+    padding: 11px 22px;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 999px;
+    color: #e8e8ea;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  #end a:hover { background: rgba(255,255,255,.07); }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<a id="home" class="fab" href="../">←&nbsp;목록</a>
+
+<div id="strip">
+  <img src="WSOWT1.jpg" width="1080" height="10800" alt="1" fetchpriority="high">
+  <img src="WSOWT2.jpg" width="1080" height="10800" alt="2" loading="lazy" decoding="async">
+  <img src="WSOWT3.jpg" width="1080" height="10305" alt="3" loading="lazy" decoding="async">
+  <img src="WSOWT4.jpg" width="1080" height="12000" alt="4" loading="lazy" decoding="async">
+</div>
+
+<div id="end">
+  <p>— 끝 —</p>
+  <a href="../">목록으로</a>
+</div>
+
+<div id="zoom" class="fab">
+  <button id="zOut" type="button" title="좁게 ( - )" aria-label="좁게">−</button>
+  <span id="zoomVal">800px</span>
+  <button id="zIn" type="button" title="넓게 ( + )" aria-label="넓게">+</button>
+</div>
+
+<script>
+(function () {
+  // 작품별 키 (같은 origin의 다른 작품과 겹치지 않도록)
+  var SLUG = 'BestFriend';
+  var POS_KEY = 'wt:' + SLUG + ':pos';
+  var WIDTH_KEY = 'wt:width';   // 폭 설정은 작품 공통
+
+  // ----- 읽기 진행 바 -----
+  var bar = document.getElementById('progress');
+  var ticking = false;
+  function update() {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var p = max > 0 ? (window.scrollY / max) * 100 : 0;
+    bar.style.width = Math.min(100, Math.max(0, p)) + '%';
+    ticking = false;
+  }
+  addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  addEventListener('resize', update);
+  update();
+
+  // ----- 폭 조절 (PC 전용, 단계별) -----
+  var STEPS = [560, 640, 720, 800, 900, 1000, 1080];
+  var DEFAULT = 3; // 800px
+  var zOut = document.getElementById('zOut');
+  var zIn = document.getElementById('zIn');
+  var zVal = document.getElementById('zoomVal');
+
+  var idx = DEFAULT;
+  try {
+    var s = parseInt(localStorage.getItem(WIDTH_KEY), 10);
+    if (s >= 0 && s < STEPS.length) idx = s;
+  } catch (e) {}
+
+  function apply() {
+    // 폭이 바뀌어도 읽던 지점을 유지
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var ratio = max > 0 ? window.scrollY / max : 0;
+
+    document.documentElement.style.setProperty('--w', STEPS[idx] + 'px');
+    zVal.textContent = STEPS[idx] + 'px';
+    zOut.disabled = idx === 0;
+    zIn.disabled = idx === STEPS.length - 1;
+
+    var newMax = document.documentElement.scrollHeight - window.innerHeight;
+    if (newMax > 0) window.scrollTo(0, ratio * newMax);
+    update();
+  }
+
+  function step(d) {
+    var next = idx + d;
+    if (next < 0 || next >= STEPS.length) return;
+    idx = next;
+    try { localStorage.setItem(WIDTH_KEY, idx); } catch (e) {}
+    apply();
+  }
+
+  apply();
+  zOut.addEventListener('click', function () { step(-1); });
+  zIn.addEventListener('click', function () { step(1); });
+
+  // ----- 읽던 위치 이어보기 -----
+  var restoring = true;
+  try {
+    var saved = parseFloat(localStorage.getItem(POS_KEY));
+    if (saved > 0.001) {
+      addEventListener('load', function () {
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        window.scrollTo(0, saved * max);
+        restoring = false;
+      });
+    } else { restoring = false; }
+  } catch (e) { restoring = false; }
+
+  addEventListener('scroll', function () {
+    if (restoring) return;
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    if (max > 0) { try { localStorage.setItem(POS_KEY, window.scrollY / max); } catch (e) {} }
+  }, { passive: true });
+
+  // ----- 키보드 -----
+  addEventListener('keydown', function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === 'Home') { window.scrollTo(0, 0); }
+    else if (e.key === 'End') { window.scrollTo(0, document.body.scrollHeight); }
+    else if (e.key === '-' || e.key === '_') { step(-1); }
+    else if (e.key === '+' || e.key === '=') { step(1); }
+  });
+})();
+</script>
+
+</body>
+</html>
