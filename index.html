@@ -2,147 +2,27 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101013">
+<meta http-equiv="refresh" content="0; url=BestFriend/">
+<link rel="canonical" href="BestFriend/">
 <title>White Socks Only Webtoons</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { background: #101013; }
-
+  html, body { height: 100%; }
   body {
+    margin: 0;
     background: #101013;
-    color: #e8e8ea;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
-    -webkit-text-size-adjust: 100%;
-    min-height: 100vh;
+    color: #6b6b75;
+    font: 14px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-
-  .wrap {
-    max-width: 880px;
-    margin: 0 auto;
-    padding: clamp(40px, 9vw, 80px) clamp(20px, 5vw, 32px) 80px;
-  }
-
-  header { margin-bottom: clamp(32px, 6vw, 52px); }
-
-  h1 {
-    font-size: clamp(26px, 5.5vw, 38px);
-    font-weight: 700;
-    letter-spacing: -.02em;
-    line-height: 1.2;
-  }
-  h1 span { color: #4f8cff; }
-
-  header p {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #80808c;
-  }
-
-  .list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 18px;
-  }
-
-  .card {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    background: #17171c;
-    border: 1px solid rgba(255,255,255,.07);
-    border-radius: 14px;
-    overflow: hidden;
-    transition: border-color .15s, transform .15s;
-  }
-  .card:hover {
-    border-color: rgba(255,255,255,.2);
-    transform: translateY(-2px);
-  }
-
-  .thumb {
-    position: relative;
-    aspect-ratio: 1 / 1;
-    background: #202027;
-  }
-  .thumb img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* 읽던 진행도 */
-  .bar {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 3px;
-    background: rgba(0,0,0,.35);
-  }
-  .bar i {
-    display: block;
-    height: 100%;
-    width: 0;
-    background: #4f8cff;
-  }
-
-  .meta { padding: 14px 16px 16px; }
-  .meta h2 {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: -.01em;
-  }
-  .meta p {
-    margin-top: 5px;
-    font-size: 12.5px;
-    color: #80808c;
-  }
-
-  footer {
-    margin-top: 48px;
-    font-size: 12px;
-    color: #55555e;
-  }
+  a { color: #4f8cff; }
 </style>
 </head>
 <body>
-
-<div class="wrap">
-
-  <header>
-    <h1>White Socks Only<br><span>Webtoons</span></h1>
-    <p>세로 스크롤로 읽는 웹툰 모음</p>
-  </header>
-
-  <div class="list">
-
-    <a class="card" href="BestFriend/">
-      <div class="thumb">
-        <img src="BestFriend/cover.jpg" alt="" width="480" height="480">
-        <div class="bar"><i data-progress="BestFriend"></i></div>
-      </div>
-      <div class="meta">
-        <h2>BestFriend</h2>
-        <p>4화 · 전편</p>
-      </div>
-    </a>
-
-  </div>
-
-  <footer>White Socks Only</footer>
-
-</div>
-
-<script>
-// 각 작품의 읽던 진행도를 카드에 표시
-document.querySelectorAll('[data-progress]').forEach(function (el) {
-  try {
-    var p = parseFloat(localStorage.getItem('wt:' + el.dataset.progress + ':pos'));
-    if (p > 0.005) el.style.width = Math.min(100, p * 100) + '%';
-  } catch (e) {}
-});
-</script>
-
+  <p>이동 중… <a href="BestFriend/">열리지 않으면 여기를 누르세요</a></p>
+  <script>location.replace('BestFriend/');</script>
 </body>
 </html>
